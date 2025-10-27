@@ -1,1 +1,117 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>勝敗計算ツール</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background-color: #f0f0f0;
+      padding: 2em;
+      max-width: 600px;
+      margin: auto;
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+
+    form {
+      background: #fff;
+      padding: 1em;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    label {
+      display: block;
+      margin: 0.5em 0;
+    }
+
+    input {
+      width: 100%;
+      padding: 0.5em;
+      margin-top: 0.2em;
+      box-sizing: border-box;
+    }
+
+    button {
+      margin-top: 1em;
+      padding: 0.7em 1.5em;
+      font-size: 1em;
+      background-color: #0078d4;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #005fa3;
+    }
+
+    pre {
+      margin-top: 2em;
+      background: #fff;
+      padding: 1em;
+      border-radius: 8px;
+      white-space: pre-wrap;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+    }
+  </style>
+</head>
+<body>
+  <h1>勝敗計算ツール</h1>
+  <form id="battleForm">
+    <label>自軍総数: <input type="number" id="myTotal" required></label>
+    <label>自軍死亡数: <input type="number" id="myDead" required></label>
+    <label>敵軍総数: <input type="number" id="enemyTotal" required></label>
+    <label>敵軍死亡数: <input type="number" id="enemyDead" required></label>
+    <button type="submit">計算する</button>
+  </form>
+  <pre id="result"></pre>
+
+  <script>
+    document.getElementById("battleForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const myTotal = parseInt(document.getElementById("myTotal").value);
+      const myDead = parseInt(document.getElementById("myDead").value);
+      const enemyTotal = parseInt(document.getElementById("enemyTotal").value);
+      const enemyDead = parseInt(document.getElementById("enemyDead").value);
+
+      if ([myTotal, myDead, enemyTotal, enemyDead].some(isNaN)) {
+        document.getElementById("result").textContent = "⚠️ 数値をすべて正しく入力してください。";
+        return;
+      }
+
+      const myRate = myDead / myTotal;
+      const enemyRate = enemyDead / enemyTotal;
+      const diff = Math.abs(myRate - enemyRate);
+      const result = myRate < enemyRate ? "自軍の勝ち" : "敵軍の勝ち";
+
+      const killToWin = Math.ceil((myRate * enemyTotal) - enemyDead + 1);
+      const recruitToWin = Math.ceil((myDead / enemyRate) - myTotal + 1);
+
+      const message = `
+勝敗計算結果
+
+自軍死亡率: ${(myRate * 100).toFixed(2)}%
+敵軍死亡率: ${(enemyRate * 100).toFixed(2)}%
+差分: ${(diff * 100).toFixed(2)}%
+
+勝敗判定: ${result}
+
+自軍が勝つには…
+・敵軍兵士をあと ${killToWin} 人倒す
+・自軍兵士をあと ${recruitToWin} 人増やす
+`;
+
+      document.getElementById("result").textContent = message;
+    });
+  </script>
+</body>
+</html>
+
 
